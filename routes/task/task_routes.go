@@ -10,7 +10,7 @@ import (
 func InitTaskRoutes(r *gin.Engine) {
 	tr := r.Group("/task") 
 	
-	tr.GET("/", func(ctx *gin.Context) {
+	tr.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, controllers.GetAllTasks())
 	})
 }

@@ -10,6 +10,7 @@ import (
 type TaskController interface {
 	GetAllTasks() []models.Task
 	GetTaskByID(ctx *gin.Context) models.Task
+	AddTask(ctx *gin.Context) models.Task
 }
 
 func GetAllTasks() []models.Task {
@@ -28,7 +29,7 @@ func GetAllTasks() []models.Task {
 		ID: "123457",
 		UID: "12345566",
 		Title: "My Task 2",
-		Description: "This is a description for a task 2",
+		Description: "This is a description for a task 2. This description turns out to be reallllllllllllllllllllllllllllllllllly long. And I mean realllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly long.",
 		DueDate: time.Now().AddDate(0, 1, 1),
 		Priority: 3,
 		EstimateHours: 4,
