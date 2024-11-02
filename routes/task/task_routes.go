@@ -10,14 +10,18 @@ import (
 func InitTaskRoutes(r *gin.Engine) {
 	tr := r.Group("/task")
 
-	tr.GET("/", getAllTasks())
-	tr.POST("/", addTask())
-
+	tr.GET("", getAllTasks())
+	tr.POST("", addTask())
 }
 
 func getAllTasks() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, controllers.GetAllTasks())
+		tasks, err := controllers.GetAllTasks()
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		ctx.JSON(http.StatusOK, tasks)
 	}
 }
 

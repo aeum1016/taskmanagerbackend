@@ -1,43 +1,33 @@
 package controllers
 
 import (
-	"time"
+	"context"
 
 	"github.com/aeum1016/taskmanagerbackend/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 type TaskController interface {
-	GetAllTasks() []models.Task
-	GetTaskByID(ctx *gin.Context) models.Task
+	GetAllTasks() ([]models.Task, error)
 	AddTask(ctx *gin.Context) (models.Task, error)
 }
 
-var ExampleTasks = []models.Task{
-	{
-		ID:            "123456",
-		UID:           "12345566",
-		Title:         "My Task",
-		Description:   "This is a description for a task 1",
-		DueDate:       time.Now().AddDate(0, 1, 0),
-		Priority:      2,
-		EstimateHours: 2,
-		Completed:     false,
-	},
-	{
-		ID: "123457",
-		UID: "12345566",
-		Title: "My Task 2",
-		Description: "This is a description for a task 2. This description turns out to be reallllllllllllllllllllllllllllllllllly long. And I mean realllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllly long.",
-		DueDate: time.Now().AddDate(0, 1, 1),
-		Priority: 3,
-		EstimateHours: 4,
-		Completed:     false,
-	},
-}
+func GetAllTasks() ([]models.Task, error) {
+	db := models.Connection
+  rows, err := db.Query(context.Background(), "SELECT * FROM public.tasks")
+  if err != nil {
+    return []models.Task{}, err
+  }
+  
+  tasks, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Task])
 
-func GetAllTasks() []models.Task {
-	return ExampleTasks
+  if err != nil {
+    return []models.Task{}, err
+  }
+
+  return tasks, nil
 }
 
 func AddTask(ctx *gin.Context) (models.Task, error) {
@@ -47,6 +37,26 @@ func AddTask(ctx *gin.Context) (models.Task, error) {
 		return models.Task{}, err
 	}
 
-	ExampleTasks = append(ExampleTasks, newTask)
+  db := models.Connection
+
+  query := `INSERT INTO public.tasks ("ID", "userID", title, priority, "dueDate", description, "hoursEstimate", tags, completed) VALUES (@id, @uid, @title, @priority, @duedate, @description, @hours, @tags, @completed)`
+  args := pgx.NamedArgs{
+    "id": uuid.New(),
+    "uid": newTask.UID,
+    "title": newTask.Title,
+    "priority": newTask.Priority,
+    "duedate": newTask.DueDate,
+    "description": newTask.Description,
+    "hours": newTask.EstimateHours,
+    "tags": newTask.Tags,
+    "completed": newTask.Completed,
+  }
+
+  _, err := db.Exec(context.Background(), query, args)
+
+  if err != nil {
+    return models.Task{}, err 
+  }
+
 	return newTask, nil
 }

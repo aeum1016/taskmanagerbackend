@@ -1,13 +1,16 @@
 package main
 
 import (
+	"github.com/aeum1016/taskmanagerbackend/models"
+	"github.com/aeum1016/taskmanagerbackend/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
-	"github.com/aeum1016/taskmanagerbackend/routes"
 )
 
 func main() {
+	connection := models.DBConnection()
+	defer connection.Close()
+
 	r := gin.Default()
 	
 	config := cors.DefaultConfig()
