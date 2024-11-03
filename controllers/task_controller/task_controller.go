@@ -1,4 +1,4 @@
-package controllers
+package task_controller
 
 import (
 	"context"
@@ -31,15 +31,16 @@ func GetAllTasks() ([]models.Task, error) {
 }
 
 func AddTask(ctx *gin.Context) (models.Task, error) {
+  db := models.Connection
+
 	var newTask models.Task
 
 	if err := ctx.ShouldBind(&newTask); err != nil {
 		return models.Task{}, err
 	}
 
-  db := models.Connection
 
-  query := `INSERT INTO public.tasks ("ID", "userID", title, priority, "dueDate", description, "hoursEstimate", tags, completed) VALUES (@id, @uid, @title, @priority, @duedate, @description, @hours, @tags, @completed)`
+  query := `INSERT INTO public.tasks (id, uid, title, priority, due_date, description, hours_estimate, tags, completed) VALUES (@id, @uid, @title, @priority, @duedate, @description, @hours, @tags, @completed)`
   args := pgx.NamedArgs{
     "id": uuid.New(),
     "uid": newTask.UID,

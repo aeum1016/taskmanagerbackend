@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Task struct {
-	ID        string    `json:"id" db:"ID"`
+	ID        string    `json:"id" db:"id"`
 	UID       string    `json:"userid" db:"userID"`
 	Title     string    `json:"title" db:"title"`
 	Description string `json:"description" db:"description"`

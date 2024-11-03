@@ -7,21 +7,16 @@ import (
 	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 var ( 
 	Connection *pgxpool.Pool
+	err error
 	pgOnce sync.Once
 )
 
 func DBConnection() *pgxpool.Pool {
 	pgOnce.Do(func() {
-		err := godotenv.Load()
-		if err != nil {
-			fmt.Println("Error loading .env file, ", err)
-		}
-
 		host := os.Getenv("DB_URL")
 		port := os.Getenv("DB_PORT")
 		user := os.Getenv("DB_USER")

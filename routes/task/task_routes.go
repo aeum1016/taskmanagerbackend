@@ -3,7 +3,7 @@ package task
 import (
 	"net/http"
 
-	"github.com/aeum1016/taskmanagerbackend/controllers"
+	"github.com/aeum1016/taskmanagerbackend/controllers/task_controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +16,7 @@ func InitTaskRoutes(r *gin.Engine) {
 
 func getAllTasks() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		tasks, err := controllers.GetAllTasks()
+		tasks, err := task_controller.GetAllTasks()
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return
@@ -27,14 +27,12 @@ func getAllTasks() gin.HandlerFunc {
 
 func addTask() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		task, err := controllers.AddTask(ctx)
+		task, err := task_controller.AddTask(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"Error": err.Error(),
 			})
 		}
-		if err == nil {
-			ctx.JSON(http.StatusOK, task)
-		}
+		ctx.JSON(http.StatusOK, task)
 	}
 }
