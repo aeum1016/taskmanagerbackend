@@ -1,9 +1,14 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Session struct {
-	ID         string    `json:"id" db:"id"`
-	UID        string    `json:"userid" db:"userID"`
-	ExpiresAt time.Time `json:"expiresat" db:"expiresAt"`
+	ID         uuid.UUID    `json:"id" db:"id"`
+	UID        uuid.UUID    `json:"userid" db:"uid"`
+	ExpiresAt time.Time `json:"expiresat" db:"expires_at"`
+	Token string `json:"token" db:"token"`
 }

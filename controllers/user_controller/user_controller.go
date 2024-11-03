@@ -2,6 +2,7 @@ package user_controller
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aeum1016/taskmanagerbackend/controllers/session_controller"
 	"github.com/aeum1016/taskmanagerbackend/models"
@@ -20,6 +21,7 @@ type LoginPayload struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// Functionality a bit off, need to update expiry time when login instead of just pulling existing session.
 func LoginUser(ctx *gin.Context) (string, error) {
 	db := models.Connection
 
@@ -28,7 +30,7 @@ func LoginUser(ctx *gin.Context) (string, error) {
 		return "", err
 	}
 
-	query := `SELECT * FROM public.users WHERE username = @username AND password = @password` 
+	query := `SELECT * FROM public.users WHERE username=@username AND password=@password` 
 	args := pgx.NamedArgs{
 		"username": user.Username,
 		"password": user.Password,
@@ -44,12 +46,12 @@ func LoginUser(ctx *gin.Context) (string, error) {
 		return "", err
 	}
 
-	userID, err := uuid.Parse(foundUser.ID)
+	existingSession, err := session_controller.GetJWTByUID(foundUser.ID)
 	if err != nil {
-		return "", err
+		fmt.Println(err)
+		return session_controller.CreateSession(foundUser.ID)
 	}
-
-	return session_controller.CreateSession(userID)
+	return existingSession, nil
 }
 
 func CreateUser(ctx *gin.Context) (string, error) {

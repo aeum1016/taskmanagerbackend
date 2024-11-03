@@ -21,7 +21,9 @@ func createUser() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		ctx.JSON(http.StatusOK, jwt)
+		ctx.JSON(http.StatusOK, gin.H{
+			"token": jwt,
+		})
 	}
 }
 
@@ -32,6 +34,8 @@ func loginUser() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		ctx.JSON(http.StatusOK, jwt)
+		ctx.JSON(http.StatusOK, gin.H{
+			"token": jwt,
+		})
 	}
 }

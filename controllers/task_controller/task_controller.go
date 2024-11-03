@@ -2,6 +2,7 @@ package task_controller
 
 import (
 	"context"
+	"errors"
 
 	"github.com/aeum1016/taskmanagerbackend/models"
 	"github.com/gin-gonic/gin"
@@ -10,13 +11,27 @@ import (
 )
 
 type TaskController interface {
-	GetAllTasks() ([]models.Task, error)
+	GetTasks(ctx *gin.Context) ([]models.Task, error)
 	AddTask(ctx *gin.Context) (models.Task, error)
 }
 
-func GetAllTasks() ([]models.Task, error) {
+type GetTasksByUIDPayload struct {
+	UID uuid.UUID `json:"uid"`
+}
+
+func GetTasks(ctx *gin.Context) ([]models.Task, error) {
 	db := models.Connection
-  rows, err := db.Query(context.Background(), "SELECT * FROM public.tasks")
+
+	uid, ok := ctx.Get("uid"); if !ok {
+		return []models.Task{}, errors.New("not authenticated") 
+	}
+
+	query := `SELECT * FROM public.tasks WHERE uid=@uid`
+	args := pgx.NamedArgs{
+		"uid": uid,
+	}
+  rows, err := db.Query(context.Background(), query, args)
+
   if err != nil {
     return []models.Task{}, err
   }
@@ -33,17 +48,20 @@ func GetAllTasks() ([]models.Task, error) {
 func AddTask(ctx *gin.Context) (models.Task, error) {
   db := models.Connection
 
+	uid, ok := ctx.Get("uid"); if !ok {
+		return models.Task{}, errors.New("not authenticated") 
+	}
+
 	var newTask models.Task
 
 	if err := ctx.ShouldBind(&newTask); err != nil {
 		return models.Task{}, err
 	}
 
-
   query := `INSERT INTO public.tasks (id, uid, title, priority, due_date, description, hours_estimate, tags, completed) VALUES (@id, @uid, @title, @priority, @duedate, @description, @hours, @tags, @completed)`
   args := pgx.NamedArgs{
     "id": uuid.New(),
-    "uid": newTask.UID,
+    "uid": uid,
     "title": newTask.Title,
     "priority": newTask.Priority,
     "duedate": newTask.DueDate,
@@ -54,7 +72,6 @@ func AddTask(ctx *gin.Context) (models.Task, error) {
   }
 
   _, err := db.Exec(context.Background(), query, args)
-
   if err != nil {
     return models.Task{}, err 
   }
