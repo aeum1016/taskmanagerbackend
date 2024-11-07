@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -14,6 +15,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	secret := os.Getenv("JWT_PHRASE")
 
 	return func(ctx *gin.Context) {
+		fmt.Println(ctx.Request.Cookies())
 		token, err := ctx.Request.Cookie("jwt")
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

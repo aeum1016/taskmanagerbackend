@@ -16,26 +16,22 @@ func InitUserRoutes(r *gin.Engine) {
 
 func createUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		jwt, err := user_controller.CreateUser(ctx)
+		_, err := user_controller.CreateUser(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"token": jwt,
-		})
+		ctx.JSON(http.StatusOK, gin.H{})
 	}
 }
 
 func loginUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		jwt, err := user_controller.LoginUser(ctx)
+		_, err := user_controller.LoginUser(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, err)
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"token": jwt,
-		})
+		ctx.JSON(http.StatusOK, gin.H{})
 	}
 }

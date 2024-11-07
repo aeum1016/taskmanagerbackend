@@ -2,7 +2,6 @@ package user_controller
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aeum1016/taskmanagerbackend/controllers/session_controller"
 	"github.com/aeum1016/taskmanagerbackend/models"
@@ -46,12 +45,17 @@ func LoginUser(ctx *gin.Context) (string, error) {
 		return "", err
 	}
 
-	existingSession, err := session_controller.GetJWTByUID(foundUser.ID)
+	session, err := session_controller.GetJWTByUID(foundUser.ID)
 	if err != nil {
-		fmt.Println(err)
-		return session_controller.CreateSession(foundUser.ID)
+		session, err = session_controller.CreateSession(foundUser.ID)
+		if err != nil {
+			return "", err
+		}
 	}
-	return existingSession, nil
+
+	ctx.SetCookie("jwt", session, 60 * 60 * 12, "/", "localhost", false, false)
+
+	return session, nil
 }
 
 func CreateUser(ctx *gin.Context) (string, error) {
@@ -75,5 +79,11 @@ func CreateUser(ctx *gin.Context) (string, error) {
 		return "", err
 	}
 
-	return session_controller.CreateSession(givenID)
+	session, err := session_controller.CreateSession(givenID)
+	if err != nil {
+		return "", err
+	}
+	ctx.SetCookie("jwt", session, 60 * 60 * 12, "/", "localhost", false, false)
+
+	return session, nil
 }
