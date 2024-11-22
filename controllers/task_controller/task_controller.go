@@ -14,6 +14,7 @@ type TaskController interface {
 	GetTasks(ctx *gin.Context) ([]models.Task, error)
 	AddTask(ctx *gin.Context) (models.Task, error)
   UpdateTask(ctx *gin.Context) (models.Task, error)
+  RemoveCompletedTasks(ctx *gin.Context) error
 }
 
 type GetTasksByUIDPayload struct {
@@ -112,4 +113,15 @@ func UpdateTask(ctx *gin.Context) (models.Task, error) {
   }
 
 	return updatedTask, nil
+}
+
+func RemoveCompletedTasks() error {
+  db := models.Connection
+
+	_, err := db.Exec(context.Background(), "DELETE FROM public.tasks WHERE completed = true")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
 	"github.com/aeum1016/taskmanagerbackend/controllers/session_controller"
+	"github.com/aeum1016/taskmanagerbackend/controllers/task_controller"
 	"github.com/aeum1016/taskmanagerbackend/models"
 	"github.com/aeum1016/taskmanagerbackend/routes"
+	"github.com/aeum1016/taskmanagerbackend/util"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -21,24 +24,12 @@ func main() {
 	connection := models.DBConnection()
 	defer connection.Close()
 
-	ticker := time.NewTicker(30 * time.Minute)
-	quit := make(chan bool)
-	defer func() {
-		ticker.Stop()
-		quit <- true
-	}()
-
-	go func(quit chan bool) {
-			for {
-				 select {
-					case <- ticker.C:
-						session_controller.RemoveExpiredSessions()
-					case <- quit:
-						ticker.Stop()
-						return
-					}
-			}
-	 }(quit)
+	util.Schedule(context.Background(), 24 * time.Hour, 0, func(v time.Time){
+		task_controller.RemoveCompletedTasks()
+	})
+	util.Schedule(context.Background(), 30 * time.Minute, 0, func(v time.Time){
+		session_controller.RemoveExpiredSessions()
+	})
 
 	r := gin.Default()
 	
