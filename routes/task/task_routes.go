@@ -15,6 +15,7 @@ func InitTaskRoutes(r *gin.Engine) {
 	{
 		tr.GET("", getTasks())
 		tr.POST("", addTask())
+		tr.PATCH("", updateTask())
 	}
 }
 
@@ -32,6 +33,19 @@ func getTasks() gin.HandlerFunc {
 func addTask() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		task, err := task_controller.AddTask(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"Error": err.Error(),
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, task)
+	}
+}
+
+func updateTask() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		task, err := task_controller.UpdateTask(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"Error": err.Error(),

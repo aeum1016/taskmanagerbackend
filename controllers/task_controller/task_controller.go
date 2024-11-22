@@ -13,6 +13,7 @@ import (
 type TaskController interface {
 	GetTasks(ctx *gin.Context) ([]models.Task, error)
 	AddTask(ctx *gin.Context) (models.Task, error)
+  UpdateTask(ctx *gin.Context) (models.Task, error)
 }
 
 type GetTasksByUIDPayload struct {
@@ -48,12 +49,11 @@ func GetTasks(ctx *gin.Context) ([]models.Task, error) {
 func AddTask(ctx *gin.Context) (models.Task, error) {
   db := models.Connection
 
-	uid, ok := ctx.Get("uid"); if !ok {
+  uid, ok := ctx.Get("uid"); if !ok {
 		return models.Task{}, errors.New("not authenticated") 
 	}
 
 	var newTask models.Task
-
 	if err := ctx.ShouldBind(&newTask); err != nil {
 		return models.Task{}, err
 	}
@@ -77,4 +77,39 @@ func AddTask(ctx *gin.Context) (models.Task, error) {
   }
 
 	return newTask, nil
+}
+
+func UpdateTask(ctx *gin.Context) (models.Task, error) {
+  db := models.Connection
+
+  _, ok := ctx.Get("uid"); if !ok {
+		return models.Task{}, errors.New("not authenticated") 
+	}
+
+	var updatedTask models.Task
+	if err := ctx.ShouldBind(&updatedTask); err != nil {
+		return models.Task{}, err
+	}
+
+  query := `UPDATE public.tasks 
+            SET (title, priority, due_date, description, hours_estimate, tags, completed) 
+            = (@title, @priority, @duedate, @description, @hours, @tags, @completed)
+            WHERE "id" = @id`
+  args := pgx.NamedArgs{
+    "id": updatedTask.ID,
+    "title": updatedTask.Title,
+    "priority": updatedTask.Priority,
+    "duedate": updatedTask.DueDate,
+    "description": updatedTask.Description,
+    "hours": updatedTask.EstimateHours,
+    "tags": updatedTask.Tags,
+    "completed": updatedTask.Completed,
+  }
+
+  _, err := db.Exec(context.Background(), query, args)
+  if err != nil {
+    return models.Task{}, err 
+  }
+
+	return updatedTask, nil
 }
