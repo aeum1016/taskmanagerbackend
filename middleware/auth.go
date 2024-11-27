@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/aeum1016/taskmanagerbackend/controllers/session_controller"
@@ -10,13 +9,15 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token, err := ctx.Cookie("authjs.session-token")
-		fmt.Println(token)
+		token, err := ctx.Cookie("_Secure-authjs.session-token")
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Not logged in",
-			})
-			return
+			token, err = ctx.Cookie("authjs.session-token")
+			if err != nil {
+				ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+					"error": "Not logged in",
+				})
+				return
+			}
 		}
 		session, err := session_controller.FindSessionByToken(token)
 		if err != nil {
