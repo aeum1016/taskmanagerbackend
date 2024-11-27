@@ -9,7 +9,7 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		token, err := ctx.Cookie("_Secure-authjs.session-token")
+		token, err := ctx.Cookie("__Secure-authjs.session-token")
 		if err != nil {
 			token, err = ctx.Cookie("authjs.session-token")
 			if err != nil {
