@@ -9,11 +9,11 @@ import (
 )
 
 func InitUserRoutes(r *gin.Engine) {
-	tr := r.Group("/task")
+	tr := r.Group("/user")
 
 	tr.Use(middleware.AuthMiddleware())
 	{
-		tr.GET("", getUserAuth())
+		tr.GET("/token", getUserAuth())
 	}
 }
 
