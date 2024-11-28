@@ -31,7 +31,7 @@ func GetUserAuth(ctx *gin.Context) (models.UserAuth, error) {
 		return models.UserAuth{}, err
 	}
 
-	auth, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.UserAuth])
+	auth, err := pgx.CollectOneRow(rows, pgx.RowToStructByNameLax[models.UserAuth])
 
 	if err != nil {
 		return models.UserAuth{}, err
