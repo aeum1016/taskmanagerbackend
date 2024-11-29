@@ -2,6 +2,7 @@ package util
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -12,6 +13,7 @@ func Schedule(ctx context.Context, p time.Duration, o time.Duration, f func(time
 	if first.Before(time.Now()) {
 		first = first.Add(p)
 	}
+	fmt.Println(first)
 	firstC := time.After(time.Until(first))
 
 	t := &time.Ticker{C: nil}
