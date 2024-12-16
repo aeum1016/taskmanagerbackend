@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: tm-volume
+  labels:
+    type: local
+    app: tm-postgres
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: /data/postgresql
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tm-volume-claim
+  labels:
+    app: tm-postgres
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tm-postgres
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tm-postgres
+  template:
+    metadata:
+      labels:
+        app: tm-postgres
+    spec:
+      containers:
+        - name: tm-postgres
+          image: "postgres:14"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: tm-secret
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: tm-data
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+      volumes:
+        - name: tm-data
+          persistentVolumeClaim:
+            claimName: tm-volume-claim
