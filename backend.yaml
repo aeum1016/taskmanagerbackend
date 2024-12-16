@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: taskmanager
+  labels:
+    name: taskmanager
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tm-backend
+  namespace: taskmanager
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tm-backend
+  template:
+    metadata:
+      labels:
+        app: tm-backend
+    spec:
+      containers:
+        - name: tm-backend
+          image: aeum1003/tm-backend:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tm-backend-service
+  namespace: taskmanager
+spec:
+  type: LoadBalancer
+  selector:
+    app: tm-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

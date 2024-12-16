@@ -8,7 +8,10 @@ RUN go mod download && go mod verify
 COPY . .
 RUN go build -v -o /usr/local/bin/ ./...
 
-FROM scratch
+FROM alpine:latest
+
 COPY --from=0 /usr/local/bin/ /usr/local/bin/
+
+EXPOSE 8080
 
 CMD ["taskmanagerbackend"]
