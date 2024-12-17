@@ -1,0 +1,25 @@
+services:
+  tm-backend:
+    image: aeum1003/tm-backend:latest
+    container_name: tm-backend
+    env_file: .env
+    ports: 
+      - 8080:8080
+  tm-db:
+    image: postgres:17-alpine
+    container_name: tm-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+       - ./createTables.sql:/docker-entrypoint-initdb.d/db.sql
+       - tm-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+volumes:
+    tm-db:
+networks:
+  tm-network:
+    driver: bridge

@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
         - name: tm-postgres
-          image: "postgres:14"
+          image: "postgres:16"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
