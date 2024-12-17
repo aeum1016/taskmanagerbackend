@@ -29,7 +29,7 @@ func GetTasks(ctx *gin.Context) ([]models.Task, error) {
 		return []models.Task{}, errors.New("not authenticated")
 	}
 
-	query := `SELECT * FROM public.tasks WHERE uid=@uid`
+	query := `SELECT * FROM tasks.tasks WHERE uid=@uid`
 	args := pgx.NamedArgs{
 		"uid": uid,
 	}
@@ -61,7 +61,7 @@ func AddTask(ctx *gin.Context) (models.Task, error) {
 		return models.Task{}, err
 	}
 
-	query := `INSERT INTO public.tasks (id, uid, title, priority, due_date, description, hours_estimate, tags, completed) VALUES (@id, @uid, @title, @priority, @duedate, @description, @hours, @tags, @completed)`
+	query := `INSERT INTO tasks.tasks (id, uid, title, priority, due_date, description, hours_estimate, tags, completed) VALUES (@id, @uid, @title, @priority, @duedate, @description, @hours, @tags, @completed)`
 	args := pgx.NamedArgs{
 		"id":          uuid.New(),
 		"uid":         uid,
@@ -95,7 +95,7 @@ func UpdateTask(ctx *gin.Context) (models.Task, error) {
 		return models.Task{}, err
 	}
 
-	query := `UPDATE public.tasks 
+	query := `UPDATE tasks.tasks 
             SET (title, priority, due_date, description, hours_estimate, tags, completed) 
             = (@title, @priority, @duedate, @description, @hours, @tags, @completed)
             WHERE "id" = @id`
@@ -121,7 +121,7 @@ func UpdateTask(ctx *gin.Context) (models.Task, error) {
 func RemoveCompletedTasks() error {
 	db := models.Connection
 
-	_, err := db.Exec(context.Background(), "DELETE FROM public.tasks WHERE completed = true")
+	_, err := db.Exec(context.Background(), "DELETE FROM tasks.tasks WHERE completed = true")
 	if err != nil {
 		return err
 	}

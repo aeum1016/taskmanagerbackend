@@ -61,5 +61,5 @@ CREATE TABLE IF NOT EXISTS tasks.tasks
     tags text[],
     completed boolean NOT NULL,
     uid integer,
-    CONSTRAINT tasks_pkey PRIMARY KEY (id)
-)
+    PRIMARY KEY (id)
+);

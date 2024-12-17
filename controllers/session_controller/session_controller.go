@@ -10,17 +10,17 @@ import (
 
 type SessionController interface {
 	FindSessionByToken(token string) (models.Session, error)
-	RemoveExpiredSessions() (error)
+	RemoveExpiredSessions() error
 }
 
 func FindSessionByToken(token string) (models.Session, error) {
 	db := models.Connection
 
-	query := `SELECT * FROM public.sessions WHERE "sessionToken" = @token`
-  args := pgx.NamedArgs{
-    "token": token,
-  }
-  
+	query := `SELECT * FROM auth.sessions WHERE "sessionToken" = @token`
+	args := pgx.NamedArgs{
+		"token": token,
+	}
+
 	rows, err := db.Query(context.Background(), query, args)
 	if err != nil {
 		return models.Session{}, err
@@ -30,9 +30,9 @@ func FindSessionByToken(token string) (models.Session, error) {
 	if err != nil {
 		return models.Session{}, err
 	}
-	
+
 	if foundSession.ExpiresAt.Compare(time.Now()) == -1 {
-		query := `DELETE FROM public.sessions WHERE id = @id`
+		query := `DELETE FROM auth.sessions WHERE id = @id`
 		args := pgx.NamedArgs{
 			"id": foundSession.ID,
 		}
@@ -46,10 +46,10 @@ func FindSessionByToken(token string) (models.Session, error) {
 	return foundSession, nil
 }
 
-func RemoveExpiredSessions() (error) {
+func RemoveExpiredSessions() error {
 	db := models.Connection
 
-	_, err := db.Exec(context.Background(), "DELETE FROM public.sessions WHERE expires < CURRENT_TIMESTAMP")
+	_, err := db.Exec(context.Background(), "DELETE FROM auth.sessions WHERE expires < CURRENT_TIMESTAMP")
 	if err != nil {
 		return err
 	}
