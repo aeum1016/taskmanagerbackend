@@ -1,6 +1,4 @@
-CREATE SCHEMA IF NOT EXISTS auth;
-
-CREATE TABLE IF NOT EXISTS auth.verification_token
+CREATE TABLE IF NOT EXISTS verification_token
 (
   identifier TEXT NOT NULL,
   expires TIMESTAMPTZ NOT NULL,
@@ -9,7 +7,7 @@ CREATE TABLE IF NOT EXISTS auth.verification_token
   PRIMARY KEY (identifier, token)
 );
  
-CREATE TABLE IF NOT EXISTS auth.accounts
+CREATE TABLE IF NOT EXISTS accounts
 (
   id SERIAL,
   "userId" INTEGER NOT NULL,
@@ -27,7 +25,7 @@ CREATE TABLE IF NOT EXISTS auth.accounts
   PRIMARY KEY (id)
 );
  
-CREATE TABLE IF NOT EXISTS auth.sessions
+CREATE TABLE IF NOT EXISTS sessions
 (
   id SERIAL,
   "userId" INTEGER NOT NULL,
@@ -37,7 +35,7 @@ CREATE TABLE IF NOT EXISTS auth.sessions
   PRIMARY KEY (id)
 );
  
-CREATE TABLE auth.users
+CREATE TABLE users
 (
   id SERIAL,
   name VARCHAR(255),
@@ -48,9 +46,9 @@ CREATE TABLE auth.users
   PRIMARY KEY (id)
 );
  
-CREATE SCHEMA IF NOT EXISTS tasks;
+CREATE SCHEMA IF NOT EXISTS tm;
 
-CREATE TABLE IF NOT EXISTS tasks.tasks
+CREATE TABLE IF NOT EXISTS tm.tasks
 (
     id uuid NOT NULL,
     title text NOT NULL,

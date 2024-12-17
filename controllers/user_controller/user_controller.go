@@ -21,7 +21,7 @@ func GetUserAuth(ctx *gin.Context) (models.UserAuth, error) {
 		return models.UserAuth{}, errors.New("not authenticated")
 	}
 
-	query := `SELECT * FROM auth.accounts WHERE "userId"=@uid`
+	query := `SELECT * FROM public.accounts WHERE "userId"=@uid`
 	args := pgx.NamedArgs{
 		"uid": uid,
 	}
