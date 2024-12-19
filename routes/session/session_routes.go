@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitTaskRoutes(r *gin.Engine) {
+func InitSessionRoutes(r *gin.Engine) {
 	srAdmin := r.Group("/session/admin")
 
 	srAdmin.Use(middleware.AuthAdminMiddleware())
