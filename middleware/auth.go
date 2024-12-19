@@ -36,6 +36,7 @@ func AuthUserMiddleware() gin.HandlerFunc {
 func AuthAdminMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.Request.Header.Values("Authentication")
+		fmt.Println(ctx.Request.Header)
 		if len(token) == 0 || token[0] != fmt.Sprintf("Basic %s", os.Getenv("AUTH_ADMIN_PASSWORD")) {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "Not admin user",

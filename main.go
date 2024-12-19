@@ -23,7 +23,7 @@ func main() {
 
 	config := cors.DefaultConfig()
 
-	config.AllowOrigins = []string{"http://localhost:3000", "https://taskmanagerfrontend-mu.vercel.app"}
+	config.AllowOrigins = []string{"http://localhost", "https://tm-frontend-218016110927.us-central1.run.app"}
 	config.AllowCredentials = true
 	r.Use(cors.New(config))
 

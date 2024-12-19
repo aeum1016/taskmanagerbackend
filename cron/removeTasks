@@ -1,1 +1,0 @@
-*/15 * * * * curl -H "Authentication: Basic $AUTH_ADMIN_PASSWORD" "http://localhost:8080/task/admin/removeCompleted" >> /var/log/tasks.log 2>&1

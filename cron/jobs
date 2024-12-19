@@ -1,0 +1,2 @@
+0 0 * * * curl -H "Authentication: Basic $AUTH_ADMIN_PASSWORD" "tm-backend:8080/task/admin/removeCompleted" >> /var/log/tasks.log 2>&1
+*/15 * * * * curl -H "Authentication: Basic $AUTH_ADMIN_PASSWORD" "tm-backend:8080/session/admin/removeExpired" >> /var/log/sessions.log 2>&1

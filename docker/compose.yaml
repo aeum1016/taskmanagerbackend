@@ -1,4 +1,10 @@
 services:
+  tm-recurring:
+    image: aeum1003/tm-recurring:latest
+    container_name: tm-recurring
+    env_file: .env
+    depends_on:
+      - tm-backend
   tm-backend:
     image: aeum1003/tm-backend:latest
     container_name: tm-backend
