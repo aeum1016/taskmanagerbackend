@@ -1,15 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
-	"time"
 
-	"github.com/aeum1016/taskmanagerbackend/controllers/session_controller"
-	"github.com/aeum1016/taskmanagerbackend/controllers/task_controller"
 	"github.com/aeum1016/taskmanagerbackend/models"
 	"github.com/aeum1016/taskmanagerbackend/routes"
-	"github.com/aeum1016/taskmanagerbackend/util"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -23,17 +18,6 @@ func main() {
 
 	connection := models.DBConnection()
 	defer connection.Close()
-
-	_, offset := time.Now().Zone()
-	util.Schedule(context.Background(), 24*time.Hour, -time.Duration(offset)*time.Second, func(t time.Time) {
-		fmt.Println("Removing completed tasks", time.Now().GoString())
-		task_controller.RemoveCompletedTasks()
-	})
-
-	util.Schedule(context.Background(), 15*time.Minute, 0, func(t time.Time) {
-		fmt.Println("Removing expired sessions", time.Now().GoString())
-		session_controller.RemoveExpiredSessions()
-	})
 
 	r := gin.Default()
 

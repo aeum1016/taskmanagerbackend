@@ -11,11 +11,17 @@ import (
 func InitTaskRoutes(r *gin.Engine) {
 	tr := r.Group("/task")
 
-	tr.Use(middleware.AuthMiddleware()) 
+	tr.Use(middleware.AuthUserMiddleware())
 	{
 		tr.GET("", getTasks())
 		tr.POST("", addTask())
 		tr.PATCH("", updateTask())
+	}
+
+	trAdmin := r.Group("/task/admin")
+	trAdmin.Use(middleware.AuthAdminMiddleware())
+	{
+		trAdmin.GET("/removeCompleted", removeCompletedTasks())
 	}
 }
 
@@ -53,5 +59,20 @@ func updateTask() gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(http.StatusOK, task)
+	}
+}
+
+func removeCompletedTasks() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		err := task_controller.RemoveCompletedTasks()
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"Error": err.Error(),
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"response": "Successfully removed completed tasks",
+		})
 	}
 }
